@@ -5,10 +5,10 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,7 +29,7 @@ public class BaseProducer {
 
         for (int i = 0; i < 10; i++) {
             // 创建消息，指定Topic、Tag以及消息体
-            Message message = new Message("BASE_MSG", "tag1", ("Hello World" + i).getBytes(StandardCharsets.UTF_8.name()));
+            Message message = new Message("BASE_MSG", "tag1", ("Hello World" + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
             // 发送同步消息
             SendResult result = producer.send(message);
 
