@@ -12,12 +12,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 同步消息发送者
+ * 同步消息生产者
  *
  * @author YuKaiFan <1092882580@qq.com>
  * @date 2020/12/17
  */
-public class BaseProducer {
+public class SyncProducer {
 
     public static void main(String[] args) throws MQClientException, UnsupportedEncodingException, RemotingException, InterruptedException, MQBrokerException {
         // 创建生产者，指定生产者组
