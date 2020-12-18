@@ -25,6 +25,8 @@ public class AsyncProducer {
         DefaultMQProducer producer = new DefaultMQProducer("BaseProducer");
         // 指定NameServer
         producer.setNamesrvAddr("172.16.61.100:9876;172.16.61.101:9876");
+        // 发送失败不重试
+        producer.setRetryTimesWhenSendAsyncFailed(0);
         // 启动生产者
         producer.start();
 
@@ -52,7 +54,7 @@ public class AsyncProducer {
                 }
             });
 
-
+            // 睡眠时间可以改长一点，防止回调还没执行producer就shutdown了
             TimeUnit.MILLISECONDS.sleep(500);
         }
 
