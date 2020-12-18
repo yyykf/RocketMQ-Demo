@@ -13,7 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
- * 消息消费者 - push模式，负债均衡模式
+ * 消息消费者 - push模式，负载均衡模式
  *
  * @author YuKaiFan <1092882580@qq.com>
  * @date 2020/12/18

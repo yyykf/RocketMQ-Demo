@@ -37,6 +37,7 @@ public class AsyncProducer {
             producer.send(message, new SendCallback() {
                 /**
                  * 发送成功的回调函数
+                 *
                  * @param sendResult 发送结果
                  */
                 @Override
@@ -46,6 +47,7 @@ public class AsyncProducer {
 
                 /**
                  * 发送失败的回调函数
+                 *
                  * @param throwable 发送失败的异常
                  */
                 @Override
