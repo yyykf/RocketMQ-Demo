@@ -20,7 +20,7 @@ public class ScheduledConsumer {
         // 指定NameServer
         consumer.setNamesrvAddr("192.168.72.200:9876;192.168.72.201:9876");
         // 订阅Topic
-        consumer.subscribe("ScheduleTopic", "*");
+        consumer.subscribe("ScheduleTopic", "tag");
         // 注册监听
         consumer.registerMessageListener((MessageListenerConcurrently) (messages, context) -> {
             for (MessageExt msg : messages) {

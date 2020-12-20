@@ -1,4 +1,4 @@
-package cn.ykf.rocketmq.demo.shcedule;
+package cn.ykf.rocketmq.demo.shcedule.producer;
 
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
