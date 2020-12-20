@@ -995,3 +995,94 @@ public class OrderConsumer {
 }
 ```
 
+### 3.9 延迟消息
+
+- 生产者
+
+  > 延迟消息的时间不是任意时间片，而是仅支持18个固定的时间段，默认的配置是messageDelayLevel=1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h，分别代表延迟level1-level18
+
+```java
+package cn.ykf.rocketmq.demo.shcedule;
+
+import org.apache.rocketmq.client.exception.MQBrokerException;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.exception.RemotingException;
+
+/**
+ * 延迟消息生产者
+ *
+ * @author YuKaiFan <1092882580@qq.com>
+ * @date 2020-12-20
+ */
+public class ScheduledProducer {
+
+    public static void main(String[] args) throws InterruptedException, RemotingException, MQClientException, MQBrokerException {
+        // 创建生产者
+        DefaultMQProducer producer = new DefaultMQProducer("ScheduledProducer");
+        // 指定NameServer
+        producer.setNamesrvAddr("192.168.72.200:9876;192.168.72.201:9876");
+        // 启动生产者
+        producer.start();
+
+        for (int i = 0; i < 10; i++) {
+            Message message = new Message("ScheduleTopic", "tag", "Hello Scheduled Message!".getBytes());
+            // 设置延迟5s，默认18个等级，对应1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h
+            message.setDelayTimeLevel(2);
+
+            SendResult result = producer.send(message);
+            System.out.println("Send Result: " + result);
+        }
+
+        // 关闭消费者
+        producer.shutdown();
+    }
+}
+
+```
+
+- 消费者
+
+```java
+package cn.ykf.rocketmq.demo.shcedule.consumer;
+
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.common.message.MessageExt;
+
+/**
+ * 延迟消息消费者
+ *
+ * @author YuKaiFan <1092882580@qq.com>
+ * @date 2020-12-20
+ */
+public class ScheduledConsumer {
+
+    public static void main(String[] args) throws MQClientException {
+        // 创建消费者
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("ScheduledConsumer");
+        // 指定NameServer
+        consumer.setNamesrvAddr("192.168.72.200:9876;192.168.72.201:9876");
+        // 订阅Topic
+        consumer.subscribe("ScheduleTopic", "*");
+        // 注册监听
+        consumer.registerMessageListener((MessageListenerConcurrently) (messages, context) -> {
+            for (MessageExt msg : messages) {
+                System.out.println("Receive message[msgId=" + msg.getMsgId() + "] "
+                        + (System.currentTimeMillis() - msg.getStoreTimestamp()) + "ms later");
+            }
+
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        });
+
+        // 启动消费者
+        consumer.start();
+    }
+}
+
+```
+
