@@ -29,11 +29,17 @@ public class PushConsumer {
         consumer.subscribe("BASE_MSG", "*");
         // 使用负载均衡模式（可以不用指定，默认就是）
         consumer.setMessageModel(MessageModel.CLUSTERING);
+        /*
+         * Batch consumption size
+         * private int consumeMessageBatchMaxSize = 1;
+         * broker默认推送1条，所以生产者即使一次性发送批量消息，消费者也会收到多次回调
+         */
+        consumer.setConsumeMessageBatchMaxSize(10);
         // 注册消费消息的回调函数，使用并发消费模式，还有顺序消费模式 MessageListenerOrderly
         consumer.registerMessageListener((new MessageListenerConcurrently() {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> messages, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
-                System.out.println(messages.size());
+                System.out.println("Messages Size():" + messages.size());
                 for (MessageExt msg : messages) {
                     try {
                         // 消费消息
