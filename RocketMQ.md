@@ -1308,3 +1308,20 @@ org.apache.rocketmq.client.exception.MQClientException: CODE: 1  DESC: The broke
 enablePropertyFilter=true
 ```
 
+- 支持语法（SQL92）
+
+> ### Grammars
+>
+> RocketMQ only defines some basic grammars to support this feature. You could also extend it easily.
+>
+> 1. Numeric comparison, like `>`, `>=`, `<`, `<=`, `BETWEEN`, `=`;
+> 2. Character comparison, like `=`, `<>`, `IN`;
+> 3. `IS NULL` or `IS NOT NULL`;
+> 4. Logical `AND`, `OR`, `NOT`;
+>
+> Constant types are:
+>
+> 1. Numeric, like 123, 3.1415;
+> 2. Character, like ‘abc’, must be made with single quotes;
+> 3. `NULL`, special constant;
+> 4. Boolean, `TRUE` or `FALSE`;
