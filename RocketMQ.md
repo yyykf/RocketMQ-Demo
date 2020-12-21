@@ -94,11 +94,12 @@
   > https://blog.csdn.net/gameloft9/article/details/99600973
 
   - broker.log
-    - ![image-20201217174705925](/Users/yukaifan/Library/Application Support/typora-user-images/image-20201217174705925.png)
+    - ![image-20201217174705925](https://typora-pics-1255993109.cos.ap-guangzhou.myqcloud.com/image-20201217174705925.png)
   - namesrv.log
-    - ![image-20201217175409578](/Users/yukaifan/Library/Application Support/typora-user-images/image-20201217175409578.png)
+    - ![image-20201217175409578](https://typora-pics-1255993109.cos.ap-guangzhou.myqcloud.com/image-20201217175409578.png)
 
 - Producer先和任一NameServer结点建立长链接，获取当前要发送的Topic存在哪些Broker上，轮询从队列列表中选择一个队列，然后与队列所在的Broker建立长链接，就可以开始发送消息了
+
 - Consumer先和任一NameServer结点建立长连接，获取订阅的Topic存在哪些Broker上，然后直接和Broker建立连接，开始消费消息
 
 ### 2.3 配置流程
@@ -496,7 +497,7 @@ nohup sh mqnamesrv &
   nohup sh mqbroker -c $ROCKERMQ_HOME/conf/2m-2s-sync/broker-a-s.properties &
   ```
 
-  ![image-20201217153755787](/Users/yukaifan/Library/Application Support/typora-user-images/image-20201217153755787.png)
+  ![image-20201217153755787](https://typora-pics-1255993109.cos.ap-guangzhou.myqcloud.com/image-20201217153755787.png)
 
 - 查看日志
 
@@ -789,7 +790,7 @@ consumer.setMessageModel(MessageModel.BROADCASTING);
 
 - 比如现在有一个创建订单的请求，那么正常的顺序应该是：创建、付款、推送、完成。但是Broker中会有多个Message queue（默认是4），如果四条消息分别存储到了4个队列中，那么消费的时候怎么保证有序？总不能先消费完成消息再消费创建消息吧？
 - 可以采取局部有序，不用每条消息都有序，假如张三创建---张三付款---李四创建.....---张三完成---李四完成，不需要保证全局有序，只需要保证张三有序，李四有序即可。那么利用队列的先进先出，我们可以把同一个人的请求发送到同一个Message Queue，那么对于每个人来说就是有序的，也就实现了局部有序。
-- ![image-20201218162539833](/Users/yukaifan/Library/Application Support/typora-user-images/image-20201218162539833.png)
+- ![image-20201218162539833](https://typora-pics-1255993109.cos.ap-guangzhou.myqcloud.com/image-20201218162539833.png)
 
 ```java
 package cn.ykf.rocketmq.demo.order.producer;
@@ -1083,6 +1084,4 @@ public class ScheduledConsumer {
         consumer.start();
     }
 }
-
 ```
-
