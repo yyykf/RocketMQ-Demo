@@ -1250,3 +1250,61 @@ public class BatchConsumer {
 }
 ```
 
+### 3.12 过滤消息
+
+- 生产者通过添加用户自定义属性，方便消费者过滤
+
+```java
+Message msg = new Message("FILTER_MSG", "tag" + i, "Hello Filter Message!".getBytes());
+// 添加用户属性，用于消费者过滤消息
+msg.putUserProperty("i", String.valueOf(i));
+```
+
+- 消费者可以通过tag过滤，但是比较简单，有时候满足不了要求。那么就可以使用第二种方式，通过sql语法和用户自定义属性来过滤**（只在push模式下有效）**
+
+```java
+package cn.ykf.rocketmq.demo.filter.consumer;
+
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.consumer.MessageSelector;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import org.apache.rocketmq.client.exception.MQClientException;
+
+/**
+ * 过滤消息消费者
+ *
+ * @author YuKaiFan <1092882580@qq.com>
+ * @date 2020/12/21
+ */
+public class FilterConsumer {
+
+    public static void main(String[] args) throws MQClientException {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("FilterConsumer");
+        consumer.setNamesrvAddr("172.16.61.100:9876:172.16.61.101:9876");
+        // 通过tag过滤，这是第一种简单的方式，无法满足复杂的要求
+        // consumer.subscribe("FILTER_MSG", "tag1 || tag2 || tag3");
+
+        // 第二种方式就是通过sql过滤，只能在push模式下使用
+        consumer.subscribe("FILTER_MSG", MessageSelector.bySql("i <= 4"));
+        // 添加监听
+        consumer.registerMessageListener((MessageListenerConcurrently) (messages, context) -> {
+            messages.forEach(System.out::println);
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        });
+
+        consumer.start();
+    }
+}
+```
+
+-  如果消费者启动时报错，那么需要修改broker配置文件并重启
+
+```java
+org.apache.rocketmq.client.exception.MQClientException: CODE: 1  DESC: The broker does not support consumer to filter message by SQL92
+```
+
+```properties
+enablePropertyFilter=true
+```
+
