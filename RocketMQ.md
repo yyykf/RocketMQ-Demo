@@ -1325,3 +1325,36 @@ enablePropertyFilter=true
 > 2. Character, like ‘abc’, must be made with single quotes;
 > 3. `NULL`, special constant;
 > 4. Boolean, `TRUE` or `FALSE`;
+
+### 3.13 事务消息
+
+- 流程
+  - ![](https://typora-pics-1255993109.cos.ap-guangzhou.myqcloud.com/事务消息.png)
+  - 首先发送half消息到broker，如果broker返回ok，说明broker已经将该准备消息放入准备队列中，生产者就可以开始执行本地事务。
+  - 根据本地事务的执行状态返回给Broker，如果返回commit，那么说明本地事务执行成功，准备消息可以放入消费队列，消费者可用于消费。如果返回rollback，那么broker将丢弃这条消息，对消费者不可见。如果返回unknown或者由于本地事务执行超时/网络波动超时，那么broker会经过一段时间后进行回查本地事务的状态，根据回查的结果决定如何处理准备消息。
+- 限制
+  - **事务消息其实只是保证了生产者发送消息成功与本地执行事务的成功的一致性，与消费者的事务无关**
+  - 消息不能是延迟消息或者是批量消息
+  - 为了避免一半的消息队列堆积，默认每条消息最多检查15次，可以通过broker的配置文件修改 `transactionCheckMax`，超过最大次数后，Broker会丢弃这条消息，并且打印错误日志。可以重写`AbstractTransactionCheckListener`类来修改这个默认行为。
+
+- 生产者
+
+```java
+
+```
+
+- 事务监听器
+
+```java
+
+```
+
+- 消费者
+
+```java
+
+```
+
+- 参考链接
+  - [Transaction example](https://rocketmq.apache.org/docs/transaction-example/)
+  - [事务消息的设计思想、使用方式、原理过程](https://blog.csdn.net/qq_32092237/article/details/109309928)
