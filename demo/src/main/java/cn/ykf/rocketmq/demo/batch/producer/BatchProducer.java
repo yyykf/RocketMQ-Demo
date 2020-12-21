@@ -1,4 +1,4 @@
-package cn.ykf.rocketmq.demo.batch;
+package cn.ykf.rocketmq.demo.batch.producer;
 
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -22,24 +22,22 @@ public class BatchProducer {
         // 创建生产者，指定生产者组
         DefaultMQProducer producer = new DefaultMQProducer("BatchProducer");
         // 指定NameServer
-        producer.setNamesrvAddr("192.168.72.200:9876;192.168.72.201:9876");
+        producer.setNamesrvAddr("172.16.61.100:9876:172.16.61.101:9876");
         // 启动生产者
         producer.start();
 
         // 创建消息，指定Topic、Tag以及消息体
-        Message msg1 = new Message("BASE_MSG", "tag1", "key1", "Hello Batch Message 1".getBytes());
-        Message msg2 = new Message("BASE_MSG", "tag2", "key2", "Hello Batch Message 2".getBytes());
-        Message msg3 = new Message("BASE_MSG", "tag3", "key3", "Hello Batch Message 3".getBytes());
+        Message msg1 = new Message("BATCH_MSG", "tag1", "key1", "Hello Batch Message 1".getBytes());
+        Message msg2 = new Message("BATCH_MSG", "tag2", "key2", "Hello Batch Message 2".getBytes());
+        Message msg3 = new Message("BATCH_MSG", "tag3", "key3", "Hello Batch Message 3".getBytes());
         List<Message> messages = Arrays.asList(msg1, msg2, msg3);
 
         // 批量发送，批量发送的消息总大小不能超过1M
         ListSplitter splitter = new ListSplitter(messages);
         while (splitter.hasNext()) {
             try {
-                // fixme 为什么发送批量消息时，消费者还是收到了3次回调，是因为发送的时候时批量，但是broker推送的时候依旧是逐条推送吗？
-                // 也就是说，批量消息只是对于生产者来说是批量一起发送，但是与消费者是多次收到还是一次收到无关，这个取决于消费者自己设置的推送大小
+                // 批量消息只是对于生产者来说是批量发送，但是与消费者是多次收到还是一次收到无关，这个取决于消费者自己设置的推送大小
                 // 如果消费者设置了推送大小，那么生产者用同步发送也好，批量发送也好，当提前发送到broker堆积时，消费者一启动就可以收到多条消息了
-                // consumer.setConsumeMessageBatchMaxSize(3)
                 SendResult result = producer.send(splitter.next());
                 System.out.println("发送结果：" + result);
             } catch (Exception e) {
