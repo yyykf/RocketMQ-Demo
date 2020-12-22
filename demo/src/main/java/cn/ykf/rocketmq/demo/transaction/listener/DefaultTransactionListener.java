@@ -30,11 +30,6 @@ public class DefaultTransactionListener implements TransactionListener {
     @Override
     public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
         System.out.printf("%s 发送成功的half消息：%s，事务参数：%s%n", Thread.currentThread().getName(), msg, arg);
-        try {
-            Thread.sleep(7000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         if (Objects.equals(msg.getTags(), "tag1")) {
             // 事务执行成功，half消息可以被消费者消费
@@ -56,7 +51,6 @@ public class DefaultTransactionListener implements TransactionListener {
      * <p>
      * 默认情况下，最多回查15次，对应Broker配置参数transactionCheckMax，超过该次数，丢弃消息并且记录错误到日志中
      * 默认经过60s回查，通过Broker配置参数transactionCheckInterval设置
-     * todo 可以通过用户自定义属性CHECK_IMMUNITY_TIME_IN_SECONDS覆盖，存疑
      *
      * @param msg 待回查的half消息
      * @return 上述三种状态之一
@@ -64,11 +58,6 @@ public class DefaultTransactionListener implements TransactionListener {
     @Override
     public LocalTransactionState checkLocalTransaction(MessageExt msg) {
         System.out.printf("%s 经过 %s ms回查，回查消息： %s%n", Thread.currentThread().getName(), System.currentTimeMillis() - startTime, msg);
-        try {
-            Thread.sleep(7000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return LocalTransactionState.COMMIT_MESSAGE;
     }
 }
