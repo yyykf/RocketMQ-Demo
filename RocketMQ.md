@@ -1336,6 +1336,7 @@ enablePropertyFilter=true
   - **事务消息其实只是保证了生产者发送消息成功与本地执行事务的成功的一致性，与消费者的事务无关**
   - 消息不能是延迟消息或者是批量消息
   - 为了避免一半的消息队列堆积，默认每条消息最多检查15次，可以通过broker的配置文件修改 `transactionCheckMax`，超过最大次数后，Broker会丢弃这条消息，并且打印错误日志。可以重写`AbstractTransactionCheckListener`类来修改这个默认行为。
+  - 由于事务消息可能不止一次被消费，所以消费端要保证幂等，比如通过消息的事务id transactionId
 - 疑惑
   - 关于`transactionTimeOut`参数和用户自定义参数`CHECK_IMMUNITY_TIME_IN_SECONDS`，按照文档的意思代表的是发送half消息后，第一次回查的时间，如果超过该参数值还未收到响应，就会开始回查事务。而`transactionCheckInterval`参数代表的是接下来每次回查的间隔，也就是第一次回查还是unknown，那么第二次回查就需要经过该参数设定的时间
   - 但是验证不出来，回查一直是`transactionCheckInterval`在起作用
